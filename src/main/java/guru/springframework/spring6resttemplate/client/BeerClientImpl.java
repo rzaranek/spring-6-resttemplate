@@ -1,5 +1,6 @@
 package guru.springframework.spring6resttemplate.client;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import guru.springframework.spring6resttemplate.model.BeerDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -25,10 +26,16 @@ public class BeerClientImpl implements BeerClient {
         RestTemplate restTemplate = restTemplateBuilder.build();
 
         ResponseEntity<String> stringResponseEntity =
-            restTemplate.getForEntity(BASE_URL + GET_BEER_PATH, String.class);
+                restTemplate.getForEntity(BASE_URL + GET_BEER_PATH, String.class);
 
         ResponseEntity<Map> mapResponseEntity =
                 restTemplate.getForEntity(BASE_URL + GET_BEER_PATH, Map.class);
+
+        ResponseEntity<JsonNode> jsonNodeResponseEntity =
+                restTemplate.getForEntity(BASE_URL + GET_BEER_PATH, JsonNode.class);
+        jsonNodeResponseEntity.getBody().findPath("content")
+                .elements().forEachRemaining(jsonNode ->
+                        System.out.println(jsonNode.get("beerName").asText()));
 
         System.out.println(stringResponseEntity.getBody());
 
