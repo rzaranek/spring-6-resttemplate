@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import guru.springframework.spring6resttemplate.model.BeerDTO;
 import guru.springframework.spring6resttemplate.model.BeerDTOPageImp;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,8 @@ import java.util.Map;
 @Service
 public class BeerClientImpl implements BeerClient {
 
-    //    public static final String BASE_URL = "http://localhost:8080";
-    public static final String GET_BEER_PATH = "/api/v1/beer";
+    @Value("${rest.template.get-beer-path}")
+    String getBeerPath;
 
     private final RestTemplateBuilder restTemplateBuilder;
 
@@ -27,13 +28,15 @@ public class BeerClientImpl implements BeerClient {
         RestTemplate restTemplate = restTemplateBuilder.build();
 
         ResponseEntity<BeerDTOPageImp> responseEntity =
-                restTemplate.getForEntity(GET_BEER_PATH, BeerDTOPageImp.class);
+                restTemplate.getForEntity(getBeerPath, BeerDTOPageImp.class);
 
         System.out.println(
                 responseEntity.getBody().getNumberOfElements());
 
         return null;
     }
+
+    public static final String GET_BEER_PATH = "/api/v1/beer";
 
     @Override
     public Page<BeerDTO> listBeersDemo() {

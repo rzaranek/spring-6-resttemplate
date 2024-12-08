@@ -10,12 +10,15 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 @Configuration
 public class RestTemplateBuilderConfig {
 
+    // odwołanie się do konfiguracji środowiska (np. z pliku application.properties)
     @Value("${rest.template.rootUrl}")
     String rootUrl;
 
+    // wykorzystanie klasy RestTemplateBuilderConfigurer pozwala wczytać domyślną konfigurację zmieniając tylko  wybrane
     @Bean
     RestTemplateBuilder restTemplateBuilder(RestTemplateBuilderConfigurer configurer) {
 
+        // sprawdzenie czy konfiguracja została ustawiona
         assert rootUrl != null;
 
         RestTemplateBuilder restTemplateBuilder = configurer.configure(new RestTemplateBuilder());
