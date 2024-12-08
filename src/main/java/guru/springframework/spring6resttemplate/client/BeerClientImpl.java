@@ -3,6 +3,7 @@ package guru.springframework.spring6resttemplate.client;
 import com.fasterxml.jackson.databind.JsonNode;
 import guru.springframework.spring6resttemplate.model.BeerDTO;
 import guru.springframework.spring6resttemplate.model.BeerDTOPageImp;
+import guru.springframework.spring6resttemplate.model.BeerStyle;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -10,8 +11,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Map;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -23,17 +26,40 @@ public class BeerClientImpl implements BeerClient {
     private final RestTemplateBuilder restTemplateBuilder;
 
     @Override
-    public Page<BeerDTO> listBeers() {
+    public Page<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInventory, Integer pageNumber, Integer pageSize) {
 
         RestTemplate restTemplate = restTemplateBuilder.build();
 
-        ResponseEntity<BeerDTOPageImp> responseEntity =
-                restTemplate.getForEntity(getBeerPath, BeerDTOPageImp.class);
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(getBeerPath);
 
-        System.out.println(
-                responseEntity.getBody().getNumberOfElements());
+        if (beerName != null && !beerName.isEmpty())
+            uriComponentsBuilder.queryParam("beerName", beerName);
 
-        return null;
+        if (beerStyle != null)
+            uriComponentsBuilder.queryParam("beerStyle", beerStyle.toString());
+
+        if (showInventory != null)
+            uriComponentsBuilder.queryParam("showInventory", showInventory.toString());
+
+        if (pageNumber != null && pageSize != null) {
+            uriComponentsBuilder.queryParam("pageNumber", pageNumber.toString());
+            uriComponentsBuilder.queryParam("pageSize", pageSize.toString());
+        }
+
+        ResponseEntity<BeerDTOPageImp> response =
+                restTemplate.getForEntity(uriComponentsBuilder.toUriString(), BeerDTOPageImp.class);
+
+        return response.getBody();
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers() {
+        return listBeers(null, null, null, null, null);
+    }
+
+    @Override
+    public Page<BeerDTO> listBeers(String beerName) {
+        return listBeers(beerName, null, null, null, null);
     }
 
     public static final String GET_BEER_PATH = "/api/v1/beer";
@@ -61,5 +87,15 @@ public class BeerClientImpl implements BeerClient {
         System.out.println(stringResponseEntity.getBody());
 
         return null;
+    }
+
+    public static String GET_BEER_BY_ID_PATH = "/api/v1/beer/{id}";
+
+    @Override
+    public BeerDTO getBeerById(UUID beerId) {
+
+        RestTemplate restTemplate = restTemplateBuilder.build();
+
+        return restTemplate.getForObject(GET_BEER_BY_ID_PATH, BeerDTO.class, beerId);
     }
 }
