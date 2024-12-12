@@ -6,12 +6,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class BeerClientImplTest {
@@ -89,5 +89,15 @@ class BeerClientImplTest {
 
         assertNotNull(updatedBeer);
         assertEquals(savedBeer.getBeerName(), updatedBeer.getBeerName());
+    }
+
+    @Test
+    void deleteBeer(){
+
+        UUID id = beerClient.listBeers().getContent().getFirst().getId();
+
+        beerClient.deleteBeer(id);
+
+        assertThrows(HttpClientErrorException.class, () -> beerClient.getBeerById(id));
     }
 }
