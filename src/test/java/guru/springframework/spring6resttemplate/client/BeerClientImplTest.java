@@ -1,11 +1,13 @@
 package guru.springframework.spring6resttemplate.client;
 
 import guru.springframework.spring6resttemplate.model.BeerDTO;
+import guru.springframework.spring6resttemplate.model.BeerStyle;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -56,6 +58,36 @@ class BeerClientImplTest {
 
         assertEquals(id, beer.getId());
         assertNotNull(beer.getId());
+    }
 
+    @Test
+    void createNewBeer() {
+
+        BeerDTO newBeer = new BeerDTO();
+
+        newBeer.setBeerName("My favorite newBeer");
+        newBeer.setBeerStyle(BeerStyle.PILSNER);
+        newBeer.setUpc("123456789");
+        newBeer.setPrice(BigDecimal.valueOf(100));
+
+        BeerDTO savedBeer = beerClient.createBeer(newBeer);
+
+        assertNotNull(savedBeer);
+    }
+
+    @Test
+    void updateBeer() {
+        BeerDTO newBeer = new BeerDTO();
+        newBeer.setBeerName("My favorite newBeer");
+        newBeer.setBeerStyle(BeerStyle.PILSNER);
+        newBeer.setUpc("123456789");
+        newBeer.setPrice(BigDecimal.valueOf(100));
+        BeerDTO savedBeer = beerClient.createBeer(newBeer);
+
+        savedBeer.setBeerName("My super updatedBeer");
+        BeerDTO updatedBeer = beerClient.updateBeer(savedBeer);
+
+        assertNotNull(updatedBeer);
+        assertEquals(savedBeer.getBeerName(), updatedBeer.getBeerName());
     }
 }
