@@ -1,11 +1,14 @@
 package guru.springframework.spring6resttemplate.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.spring6resttemplate.model.BeerDTO;
 import guru.springframework.spring6resttemplate.model.BeerStyle;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
+import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.math.BigDecimal;
@@ -17,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BeerClientImplTest {
 
     @Autowired
-    BeerClientImpl beerClient;
+    BeerClient beerClient;
 
     @Test
     void listBeers() {
