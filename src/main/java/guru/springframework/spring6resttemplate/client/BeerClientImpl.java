@@ -22,8 +22,11 @@ import java.util.UUID;
 @Service
 public class BeerClientImpl implements BeerClient {
 
+    // to nie działa w testach z mockowaniem serwera
     @Value("${rest.template.get-beer-path}")
     String getBeerPath;
+
+    public static final String GET_BEER_PATH = "/api/v1/beer";
 
     private final RestTemplateBuilder restTemplateBuilder;
 
@@ -32,7 +35,7 @@ public class BeerClientImpl implements BeerClient {
 
         RestTemplate restTemplate = restTemplateBuilder.build();
 
-        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(getBeerPath);
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromPath(GET_BEER_PATH);
 
         if (beerName != null && !beerName.isEmpty())
             uriComponentsBuilder.queryParam("beerName", beerName);
@@ -63,8 +66,6 @@ public class BeerClientImpl implements BeerClient {
     public Page<BeerDTO> listBeers(String beerName) {
         return listBeers(beerName, null, null, null, null);
     }
-
-    public static final String GET_BEER_PATH = "/api/v1/beer";
 
     @Override
     public Page<BeerDTO> listBeersDemo() {
